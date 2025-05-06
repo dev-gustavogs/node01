@@ -1,14 +1,22 @@
-import {} from 'node:crypto'
+import { randomUUID } from 'node:crypto'
 
 export class database_memory{
   #videos = new Map()
 
   list(){
-    return this.#videos.values
+    return Array.from(this.#videos.entries()).map((videoArray) => {
+      const id = videoArray[0]
+      const data = videoArray[1]
+
+      return {
+        id,
+        ...data,
+      }
+    })
   }
 
   create(video){
-    const videoID = randowUUID()
+    const videoID = randomUUID()
 
     this.#videos.set(videoID, video)
   }

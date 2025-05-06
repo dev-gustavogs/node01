@@ -10,31 +10,50 @@
 
 import { fastify } from 'fastify'
 import { database_memory } from './database-memory.js'
-import { title } from 'node:process'
+
+
 
 const server = fastify()
 const database =  new database_memory
 
-server.get('/videos', () => {
-  return "Olá Mundo"
-})
-
-server.post('/videos', () => {
+server.post('/videos', (request, reply) => {
+  const {title , description, duration} = request.body 
+  
   database.create({
-    title: 'video-01',
-    description: 'esse é o video 1',
-    duration: 180
+    title,
+    description,
+    duration,
   })
 
-  console.log(database.list())
+  return reply.status(201).send()
 })
 
-server.put('/videos/:id', () => {
-  return "Olá Gustavo"
+server.get('/videos', () => {
+  const videos = database.list()
+
+  console.log(videos)
+
+  return videos
 })
 
-server.delete('/videos/:id', () => {
-  return "Olá Gustavo"
+server.put('/videos/:id', (request, reply) => {
+  const videoID = request.params.id
+  const {title , description, duration} = request.body  
+
+  database.update(videoID, {
+    title,
+    description,
+    duration,
+  })
+
+  return reply.status(204).send()
+})
+
+server.delete('/videos/:id', (request, reply) => {
+  const videoID = request.params.id
+  database.delete(videoID)
+
+  return reply.status(204).send()
 })
 
 server.listen({
